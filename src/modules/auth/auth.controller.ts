@@ -24,4 +24,31 @@ const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-export const authControllers = { registerUser };
+const loginUser = async (req: Request, res: Response) => {
+  try {
+    const result = await authServices.loginUser(req.body);
+    if (result === null) {
+      return res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    } else if (result === false) {
+      return res.status(401).json({
+        success: false,
+        message: 'Password does not match with your account',
+      });
+    }
+    res.status(200).json({
+      success: true,
+      message: 'Login successful',
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const authControllers = { registerUser, loginUser };

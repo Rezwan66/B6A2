@@ -4,6 +4,7 @@ import { authRoutes } from './modules/auth/auth.routes';
 import logger from './middleware/routeLogger';
 import { userRoutes } from './modules/users/users.routes';
 import { vehicleRoutes } from './modules/vehicles/vehicles.routes';
+import { bookingRoutes } from './modules/bookings/bookings.routes';
 
 const app = express();
 app.use(express.json());
@@ -23,5 +24,17 @@ app.use('/api/v1/users', logger, userRoutes);
 
 //^ vehicles route
 app.use('/api/v1/vehicles', logger, vehicleRoutes);
+
+//^ bookings route
+app.use('/api/v1/bookings', logger, bookingRoutes);
+
+//! NOT Found route
+app.use(logger, (req: Request, res: Response) => {
+  res.status(404).json({
+    success: false,
+    message: 'Resource does not exist!',
+    path: req.path,
+  });
+});
 
 export default app;
