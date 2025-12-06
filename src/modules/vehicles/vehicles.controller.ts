@@ -20,13 +20,6 @@ const addVehicles = async (req: Request, res: Response) => {
 const getAllVehicles = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.getAllVehicles();
-    // if(result.rows.length===0){
-    //   return res.status(200).json({
-    //   success: true,
-    //   message: 'Vehicles retrieved successfully',
-    //   data: result.rows,
-    // });
-    // }
     res.status(200).json({
       success: true,
       message: `${

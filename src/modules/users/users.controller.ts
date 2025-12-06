@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { userServices } from './users.service';
+import Roles from '../../constants/roles';
+import { JwtPayload } from 'jsonwebtoken';
 
 const getUser = async (req: Request, res: Response) => {
   try {
@@ -19,8 +21,16 @@ const getUser = async (req: Request, res: Response) => {
 };
 
 const updateUser = async (req: Request, res: Response) => {
+  const { userId: id } = req.params;
+  const loggedInUser = req.user as JwtPayload;
+  // console.log({ loggedInUser }, { id });
+  if (loggedInUser.role === Roles.customer && loggedInUser.id !== Number(id)) {
+    return res.status(403).json({
+      success: false,
+      message: 'Forbidden: customers can update only their own profile!',
+    });
+  }
   try {
-    const { userId: id } = req.params;
     const result = await userServices.updateUser(req.body, id as string);
     if (result.rows.length === 0) {
       res.status(404).json({
