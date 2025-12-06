@@ -42,4 +42,33 @@ const updateUser = async (req: Request, res: Response) => {
   }
 };
 
-export const userControllers = { getUser, updateUser };
+const deleteUser = async (req: Request, res: Response) => {
+  try {
+    const { userId: id } = req.params;
+    const result = await userServices.deleteUser(id as string);
+
+    if ('blocked' in result && result.blocked) {
+      res.status(400).json({
+        success: false,
+        message: 'Cannot delete user with active bookings',
+      });
+    } else if ('rowCount' in result && result.rowCount === 0) {
+      res.status(404).json({
+        success: false,
+        message: 'User not found',
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: 'User deleted successfully',
+      });
+    }
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+export const userControllers = { getUser, updateUser, deleteUser };
