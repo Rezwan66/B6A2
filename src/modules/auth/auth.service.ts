@@ -11,7 +11,7 @@ const registerUser = async (payload: Record<string, unknown>) => {
     `
     INSERT INTO users(name, email, password, phone, role) VALUES($1, $2, $3, $4, $5) RETURNING *
     `,
-    [name, email, hashedPass, phone, role]
+    [name, (email as string).toLowerCase(), hashedPass, phone, role]
   );
 
   delete result.rows[0].password;
