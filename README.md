@@ -37,12 +37,14 @@ npm install
 
 ### Configure Environment Variables
 
-Create a .env file in the root of your project and add the necessary environment variables.
+Create a `.env` file in the root of your project and add the necessary environment variables.
+
+Example `.env`:
 
 ```env
 PORT=5000
-CONNECTION_STR=postgresql://neondb_owner:npg_Ljt6n3fGYCpa@ep-dawn-resonance-a406nn64-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
-JWT_SECRET='KMUFsIDTnFmyG3nMiGM6H9FNFUROf3wh7SmqJp-QV30'
+CONNECTION_STR=postgresql://neondb_owner:<password>@ep-dawn-resonance-a406nn64-pooler.us-east-1.aws.neon.tech/neondb?sslmode=require&channel_binding=require
+JWT_SECRET=your_jwt_secret
 ```
 
 #### Run the Server
