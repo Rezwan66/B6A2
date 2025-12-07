@@ -30,6 +30,15 @@ const updateUser = async (req: Request, res: Response) => {
       message: 'Forbidden: customers can update only their own profile!',
     });
   }
+  if (
+    loggedInUser.role === Roles.customer &&
+    req.body.role !== loggedInUser.role
+  ) {
+    return res.status(403).json({
+      success: false,
+      message: 'Forbidden: customers cannot make themselves into admin!',
+    });
+  }
   try {
     const result = await userServices.updateUser(req.body, id as string);
     if (result.rows.length === 0) {

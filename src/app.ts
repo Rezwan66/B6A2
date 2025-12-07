@@ -5,12 +5,16 @@ import logger from './middleware/routeLogger';
 import { userRoutes } from './modules/users/users.routes';
 import { vehicleRoutes } from './modules/vehicles/vehicles.routes';
 import { bookingRoutes } from './modules/bookings/bookings.routes';
+import autoReturnBookings from './config/autoUpdateDB';
 
 const app = express();
 app.use(express.json());
 
 //@ initializing database
 createDB();
+
+//& auto-update expired bookings
+autoReturnBookings();
 
 app.get('/', logger, (req: Request, res: Response) => {
   res.send(`Vehicle Rental Server is running 🚗`);

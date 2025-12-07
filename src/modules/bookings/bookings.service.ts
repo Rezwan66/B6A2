@@ -106,8 +106,70 @@ const getAllBookings = async (payload: Record<string, unknown>) => {
   }
 };
 
-const updateBooking = async (payload: Record<string, unknown>, id: string) => {
-  console.log('todo:updateBooking');
+const updateBooking = async (
+  payload: { status: 'cancelled' | 'returned' },
+  id: string,
+  userInfo: Record<string, unknown>
+) => {
+  // console.log(Object.keys(payload).join(','));
+  // console.log(id, payload);
+  // const { status } = payload;
+  const { role, id: userId } = userInfo;
+
+  const currentBooking = await pool.query(
+    `SELECT * FROM bookings WHERE id=$1`,
+    [id]
+  );
+  if (currentBooking.rows.length === 0) {
+    return null;
+  }
+  const bookingToUpdate = currentBooking.rows[0];
+  // console.log(currentBooking.rows[0]); //object
+  // console.log(new Date());
+  // console.log(bookingToUpdate);
+  if (role === Roles.customer && bookingToUpdate.customer_id !== userId) {
+    return { blocked: true };
+  }
+  const now = new Date();
+
+  if (role === Roles.customer) {
+    if (bookingToUpdate.rent_start_date > now) {
+      const updateBooking = await pool.query(
+        `
+    UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *
+    `,
+        [Status.cancelled, id]
+      );
+      await pool.query(
+        `UPDATE vehicles SET availability_status=$1 WHERE id=$2 RETURNING *`,
+        [Availability.available, bookingToUpdate.vehicle_id]
+      );
+      return updateBooking.rows[0];
+    } else return false;
+  } else if (role === Roles.admin) {
+    const updateBooking = await pool.query(
+      `
+    UPDATE bookings SET status=$1 WHERE id=$2 RETURNING *
+    `,
+      [Status.returned, id]
+    );
+    await pool.query(
+      `UPDATE vehicles SET availability_status=$1 WHERE id=$2 RETURNING *`,
+      [Availability.available, bookingToUpdate.vehicle_id]
+    );
+    const updatedVehicle = await pool.query(
+      `SELECT * FROM vehicles WHERE id=$1`,
+      [bookingToUpdate.vehicle_id]
+    );
+    // console.log(updatedVehicle.rows[0]);
+    const adminResponse = {
+      ...updateBooking.rows[0],
+      vehicle: {
+        availability_status: updatedVehicle.rows[0].availability_status,
+      },
+    };
+    return adminResponse;
+  }
 };
 
 export const bookingServices = { addBooking, getAllBookings, updateBooking };

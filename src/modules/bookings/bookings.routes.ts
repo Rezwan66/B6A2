@@ -16,7 +16,7 @@ router.get(
   bookingControllers.getAllBookings
 );
 router.put(
-  '/',
+  '/:bookingId',
   auth(Roles.admin, Roles.customer),
   bookingControllers.updateBooking
 );
