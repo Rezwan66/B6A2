@@ -3,6 +3,7 @@
 Express server for a vehicle rental service- built using a modular architecture.
 
 - **Vercel Project Name**: modular-vehicle-rental
+- [**Vercel Live Server (BaseURL)**](https://modular-vehicle-rental.vercel.app/)
 
 ## 💻 Project Overview
 
@@ -54,5 +55,3 @@ After configuring the environment variables, run this command to start the proje
 ```bash
 npm run dev
 ```
-
-### [Vercel Live Server (BaseURL)](https://modular-vehicle-rental.vercel.app/)
