@@ -1,5 +1,7 @@
 import { Request, Response } from 'express';
 import { bookingServices } from './bookings.service';
+import { JwtPayload } from 'jsonwebtoken';
+import Roles from '../../constants/roles';
 
 const addBooking = async (req: Request, res: Response) => {
   try {
@@ -25,7 +27,24 @@ const addBooking = async (req: Request, res: Response) => {
 };
 
 const getAllBookings = async (req: Request, res: Response) => {
-  console.log('todo:getAllBookings');
+  try {
+    const result = await bookingServices.getAllBookings(req.user as JwtPayload);
+
+    res.status(200).json({
+      success: true,
+      message: `${
+        (req.user as JwtPayload).role === Roles.admin
+          ? 'Bookings retrieved successfully'
+          : 'Your bookings retrieved successfully'
+      }`,
+      data: result,
+    });
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
 };
 
 const updateBooking = async (req: Request, res: Response) => {
